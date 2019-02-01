@@ -196,7 +196,7 @@ const bignine = `
       )
 
       // Cover returns the cover page.
-      func Cover(nextSlide func()) (title string, content tview.Primitive) {
+      func Dashboard(nextSlide func()) (title string, content tview.Primitive) {
 	      // What's the size of the logo?
 	      lines := strings.Split(bignine, "\n")
 	      logoWidth := 0
@@ -230,5 +230,5 @@ const bignine = `
 	      AddItem(tview.NewBox(), 0, 1, false), logoHeight, 1, true).
 	      AddItem(frame, 0, 10, false)
 
-	      return "Start", flex
+	      return "Dashboard", flex
       }

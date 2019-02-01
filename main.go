@@ -7,7 +7,7 @@ import (
 
 	"github.com/gdamore/tcell"
 	"github.com/rivo/tview"
-	"./lib"
+	"./pkg"
 )
 
 // Service is a function which returns the service's main primitive and its title.
@@ -22,7 +22,7 @@ var app = tview.NewApplication()
 func main() {
 	// The services (features this application provides).
 	services := []Service{
-		dadlib.Cover,
+		dadlib.Dashboard,
 		dadlib.HelloWorld,
 	}
 
