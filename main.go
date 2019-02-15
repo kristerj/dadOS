@@ -23,17 +23,8 @@ func main() {
 	// The services (features this application provides).
 	services := []Service{
 		dadlib.Dashboard,
-		dadlib.HelloWorld,
+		dadlib.Co2,
 	}
-
-	form := tview.NewForm()
-	form.AddInputField("Login name", "", 20, nil, nil).
-		AddPasswordField("Password", "", 10, '*', nil).
-		AddButton("Login", loginFn).
-		AddButton("Quit", func() {
-			app.Stop()
-		})
-	form.SetBorder(true).SetTitle("Login").SetTitleAlign(tview.AlignLeft)
 
 	// The bottom row has some info on where we are.
 	info := tview.NewTextView().
@@ -75,6 +66,8 @@ func main() {
 			nextService()
 		} else if event.Key() == tcell.KeyCtrlP {
 			previousService()
+		} else if event.Key() == tcell.KeyEsc || event.Rune() == 'q' {
+			app.Stop()
 		}
 		return event
 	})
@@ -83,6 +76,18 @@ func main() {
 	if err := app.SetRoot(layout, true).Run(); err != nil {
 		panic(err)
 	}
+}
+
+//end of main function, start of any helper functions
+func showLogin(){
+	form := tview.NewForm()
+	form.AddInputField("Login name", "", 20, nil, nil).
+	AddPasswordField("Password", "", 10, '*', nil).
+	AddButton("Login", loginFn).
+	AddButton("Quit", func() {
+		app.Stop()
+	})
+	form.SetBorder(true).SetTitle("Login").SetTitleAlign(tview.AlignLeft)
 }
 
 func loginFn(){

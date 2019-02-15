@@ -14,12 +14,12 @@ const codeWidth = 56
 func Code(p tview.Primitive, width, height int, code string) tview.Primitive {
 	// Set up code view.
 	codeView := tview.NewTextView().
-	SetWrap(false).
-	SetDynamicColors(true)
+		SetWrap(false).
+		SetDynamicColors(true)
 	codeView.SetBorderPadding(1, 1, 2, 0)
 	fmt.Fprint(codeView, code)
 
 	return tview.NewFlex().
-	AddItem(Center(width, height, p), 0, 1, true).
-	AddItem(codeView, codeWidth, 1, false)
+		AddItem(Center(width, height, p), 0, 1, true).
+		AddItem(codeView, codeWidth, 1, false)
 }
