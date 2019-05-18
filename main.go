@@ -1,13 +1,12 @@
 package main
 
-
 import (
 	"fmt"
 	"strconv"
 
+	dadlib "./pkg"
 	"github.com/gdamore/tcell"
 	"github.com/rivo/tview"
-	"./pkg"
 )
 
 // Service is a function which returns the service's main primitive and its title.
@@ -28,24 +27,25 @@ func main() {
 
 	// The bottom row has some info on where we are.
 	info := tview.NewTextView().
-	SetDynamicColors(true).
-	SetRegions(true).
-	SetWrap(false)
+		SetDynamicColors(true).
+		SetRegions(true).
+		SetWrap(false)
 
 	// Create the pages for all services.
 	currentService := 0
 	info.Highlight(strconv.Itoa(currentService))
 	pages := tview.NewPages()
+
 	previousService := func() {
 		currentService = (currentService - 1 + len(services)) % len(services)
 		info.Highlight(strconv.Itoa(currentService)).
-		ScrollToHighlight()
+			ScrollToHighlight()
 		pages.SwitchToPage(strconv.Itoa(currentService))
 	}
 	nextService := func() {
 		currentService = (currentService + 1) % len(services)
 		info.Highlight(strconv.Itoa(currentService)).
-		ScrollToHighlight()
+			ScrollToHighlight()
 		pages.SwitchToPage(strconv.Itoa(currentService))
 	}
 	for index, service := range services {
@@ -56,9 +56,9 @@ func main() {
 
 	// Create the main layout.
 	layout := tview.NewFlex().
-	SetDirection(tview.FlexRow).
-	AddItem(pages, 0, 1, true).
-	AddItem(info, 1, 1, false)
+		SetDirection(tview.FlexRow).
+		AddItem(pages, 0, 1, true).
+		AddItem(info, 1, 1, false)
 
 	// Shortcuts to navigate the slides.
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
@@ -79,17 +79,17 @@ func main() {
 }
 
 //end of main function, start of any helper functions
-func showLogin(){
+func showLogin() {
 	form := tview.NewForm()
 	form.AddInputField("Login name", "", 20, nil, nil).
-	AddPasswordField("Password", "", 10, '*', nil).
-	AddButton("Login", loginFn).
-	AddButton("Quit", func() {
-		app.Stop()
-	})
+		AddPasswordField("Password", "", 10, '*', nil).
+		AddButton("Login", loginFn).
+		AddButton("Quit", func() {
+			app.Stop()
+		})
 	form.SetBorder(true).SetTitle("Login").SetTitleAlign(tview.AlignLeft)
 }
 
-func loginFn(){
+func loginFn() {
 
 }
