@@ -1,10 +1,10 @@
 package main
 
 import (
+	"dados/services"
 	"fmt"
 	"strconv"
 
-	dadlib "./pkg"
 	"github.com/gdamore/tcell"
 	"github.com/rivo/tview"
 )
@@ -21,8 +21,8 @@ var app = tview.NewApplication()
 func main() {
 	// The services (features this application provides).
 	services := []Service{
-		dadlib.Dashboard,
-		dadlib.Co2,
+		services.Dashboard,
+		services.Co2,
 	}
 
 	// The bottom row has some info on where we are.

@@ -9,6 +9,7 @@
             "name": "Launch",
             "type": "go",
             "request": "launch",
+            "internalConsoleOptions": "openOnSessionStart",
             "mode": "auto",
             "program": "${fileDirname}",
             "env": {},
