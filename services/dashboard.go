@@ -1,10 +1,9 @@
 package services
 
 import (
+	"dados/dadlib"
 	"fmt"
 	"strings"
-
-	"dados/dadlib"
 
 	"github.com/gdamore/tcell"
 	"github.com/rivo/tview"
@@ -15,8 +14,14 @@ const (
 	navigation = `Ctrl-N: Next service    Ctrl-P: Previous service    Ctrl-C: Exit`
 )
 
-// Dashboard returns the cover page.
-func Dashboard(nextSlide func()) (title string, content tview.Primitive) {
+//Dashboard is a thing
+type Dashboard struct {
+	name    string
+	content tview.Primitive
+}
+
+//GetContent spits out the content
+func (d Dashboard) GetContent() (content tview.Primitive) {
 	// What's the size of the logo?
 	lines := strings.Split(dadlib.Bignum(9), "\n")
 	logoWidth := 0
@@ -27,10 +32,8 @@ func Dashboard(nextSlide func()) (title string, content tview.Primitive) {
 		}
 	}
 	logoBox := tview.NewTextView().
-		SetTextColor(tcell.ColorGreen).
-		SetDoneFunc(func(key tcell.Key) {
-			nextSlide()
-		})
+		SetTextColor(tcell.ColorGreen)
+
 	fmt.Fprint(logoBox, dadlib.Bignum(8))
 
 	// Create a frame for the subtitle and navigation infos.
@@ -50,5 +53,10 @@ func Dashboard(nextSlide func()) (title string, content tview.Primitive) {
 			AddItem(tview.NewBox(), 0, 1, false), logoHeight, 1, true).
 		AddItem(frame, 0, 10, false)
 
-	return "Dashboard", flex
+	return flex
+}
+
+//GetName spits out a name
+func (d Dashboard) GetName() (name string) {
+	return "Dashboard"
 }

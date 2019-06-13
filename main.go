@@ -9,22 +9,17 @@ import (
 	"github.com/rivo/tview"
 )
 
-// Service is a function which returns the service's main primitive and its title.
-// It receives a "nextService" function which can be called to advance the
-// presentation to the next service.
-type Service func(nextService func()) (title string, content tview.Primitive)
-
 // The application.
 var app = tview.NewApplication()
 
 // Starting point for the application.
 func main() {
 	// The services (features this application provides).
-	services := []Service{
-		services.Dashboard,
-		services.Co2,
+	serviceSlice := []services.Service{
+		services.Dashboard{},
+		services.Dashboard{},
+		//services.Co2,
 	}
-
 	// The bottom row has some info on where we are.
 	info := tview.NewTextView().
 		SetDynamicColors(true).
@@ -37,19 +32,20 @@ func main() {
 	pages := tview.NewPages()
 
 	previousService := func() {
-		currentService = (currentService - 1 + len(services)) % len(services)
+		currentService = (currentService - 1 + len(serviceSlice)) % len(serviceSlice)
 		info.Highlight(strconv.Itoa(currentService)).
 			ScrollToHighlight()
 		pages.SwitchToPage(strconv.Itoa(currentService))
 	}
 	nextService := func() {
-		currentService = (currentService + 1) % len(services)
+		currentService = (currentService + 1) % len(serviceSlice)
 		info.Highlight(strconv.Itoa(currentService)).
 			ScrollToHighlight()
 		pages.SwitchToPage(strconv.Itoa(currentService))
 	}
-	for index, service := range services {
-		title, primitive := service(nextService)
+	for index, service := range serviceSlice {
+		title := service.GetName()
+		primitive := service.GetContent()
 		pages.AddPage(strconv.Itoa(index), primitive, true, index == currentService)
 		fmt.Fprintf(info, `%d ["%d"][darkcyan]%s[white][""]  `, index+1, index, title)
 	}
