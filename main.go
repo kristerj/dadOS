@@ -4,6 +4,7 @@ import (
 	"dados/services"
 	"fmt"
 	"strconv"
+	"time"
 
 	"github.com/gdamore/tcell"
 	"github.com/rivo/tview"
@@ -12,24 +13,34 @@ import (
 // The application.
 var app = tview.NewApplication()
 
+var pages *tview.Pages
+var layout *tview.Flex
+var serviceSlice [10]services.Service
+var titles [10]string
+var info *tview.TextView
+var currentService int
+var indexupdate int
+
 // Starting point for the application.
 func main() {
+
+	dashboard := services.Dashboard{}
 	// The services (features this application provides).
-	serviceSlice := []services.Service{
-		services.Dashboard{},
-		services.Dashboard{},
-		//services.Co2,
-	}
+	serviceSlice[0] = dashboard
+	serviceSlice[1] = dashboard
+
+	titles[0] = "Dashboard 1"
+	titles[1] = "Dashboard 2"
 	// The bottom row has some info on where we are.
-	info := tview.NewTextView().
+	info = tview.NewTextView().
 		SetDynamicColors(true).
 		SetRegions(true).
 		SetWrap(false)
 
 	// Create the pages for all services.
-	currentService := 0
+	currentService = 0
 	info.Highlight(strconv.Itoa(currentService))
-	pages := tview.NewPages()
+	pages = tview.NewPages()
 
 	previousService := func() {
 		currentService = (currentService - 1 + len(serviceSlice)) % len(serviceSlice)
@@ -43,15 +54,15 @@ func main() {
 			ScrollToHighlight()
 		pages.SwitchToPage(strconv.Itoa(currentService))
 	}
-	for index, service := range serviceSlice {
-		title := service.GetName()
-		primitive := service.GetContent()
+	for index := 0; index < 2; index++ {
+		title := titles[index]
+		primitive := serviceSlice[index].GetContent()
 		pages.AddPage(strconv.Itoa(index), primitive, true, index == currentService)
 		fmt.Fprintf(info, `%d ["%d"][darkcyan]%s[white][""]  `, index+1, index, title)
 	}
 
 	// Create the main layout.
-	layout := tview.NewFlex().
+	layout = tview.NewFlex().
 		SetDirection(tview.FlexRow).
 		AddItem(pages, 0, 1, true).
 		AddItem(info, 1, 1, false)
@@ -67,11 +78,12 @@ func main() {
 		}
 		return event
 	})
-
+	go updateTime()
 	// Start the application.
 	if err := app.SetRoot(layout, true).Run(); err != nil {
 		panic(err)
 	}
+
 }
 
 //end of main function, start of any helper functions
@@ -88,4 +100,22 @@ func showLogin() {
 
 func loginFn() {
 
+}
+func updateTime() {
+	for {
+		time.Sleep(2 * time.Second)
+		app.QueueUpdateDraw(func() {
+			//layout = serviceSlice[currentService].GetContent()
+			for index := 0; index < 2; index++ {
+				title := serviceSlice[currentService].GetName()
+				primitive := serviceSlice[currentService].GetContent()
+				pages.AddPage(strconv.Itoa(index), primitive, true, index == currentService)
+				fmt.Fprintf(info, `%d ["%d"][darkcyan]%s[white][""]  `, index+1, index, title)
+				layout = tview.NewFlex().
+					SetDirection(tview.FlexRow).
+					AddItem(pages, 0, 1, true).
+					AddItem(info, 1, 1, false)
+			}
+		})
+	}
 }

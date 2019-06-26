@@ -7,5 +7,5 @@ import (
 //Service interface defines services(screens) provided
 type Service interface {
 	GetName() string
-	GetContent() tview.Primitive
+	GetContent() *tview.Flex
 }

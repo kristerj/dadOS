@@ -3,6 +3,7 @@ package services
 import (
 	"dados/dadlib"
 	"fmt"
+	"math/rand"
 	"strings"
 
 	"github.com/gdamore/tcell"
@@ -16,14 +17,15 @@ const (
 
 //Dashboard is a thing
 type Dashboard struct {
-	name    string
-	content tview.Primitive
+	Name    string
+	content *tview.Flex
 }
 
 //GetContent spits out the content
-func (d Dashboard) GetContent() (content tview.Primitive) {
+func (d Dashboard) GetContent() *tview.Flex {
 	// What's the size of the logo?
-	lines := strings.Split(dadlib.Bignum(9), "\n")
+	somenum := rand.Intn(9)
+	lines := strings.Split(dadlib.Bignum(somenum), "\n")
 	logoWidth := 0
 	logoHeight := len(lines)
 	for _, line := range lines {
@@ -34,7 +36,7 @@ func (d Dashboard) GetContent() (content tview.Primitive) {
 	logoBox := tview.NewTextView().
 		SetTextColor(tcell.ColorGreen)
 
-	fmt.Fprint(logoBox, dadlib.Bignum(8))
+	fmt.Fprint(logoBox, dadlib.Bignum(somenum))
 
 	// Create a frame for the subtitle and navigation infos.
 	frame := tview.NewFrame(tview.NewBox()).
