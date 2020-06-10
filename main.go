@@ -13,9 +13,10 @@ import (
 // The application.
 var app = tview.NewApplication()
 
+var numpages int
 var pages *tview.Pages
 var layout *tview.Flex
-var serviceSlice [10]services.Service
+var serviceArr [10]services.Service
 var titles [10]string
 var info *tview.TextView
 var currentService int
@@ -23,11 +24,11 @@ var indexupdate int
 
 // Starting point for the application.
 func main() {
-
+	numpages = 2
 	dashboard := services.Dashboard{}
 	// The services (features this application provides).
-	serviceSlice[0] = dashboard
-	serviceSlice[1] = dashboard
+	serviceArr[0] = dashboard
+	serviceArr[1] = dashboard
 
 	titles[0] = "Dashboard 1"
 	titles[1] = "Dashboard 2"
@@ -43,20 +44,20 @@ func main() {
 	pages = tview.NewPages()
 
 	previousService := func() {
-		currentService = (currentService - 1 + len(serviceSlice)) % len(serviceSlice)
+		currentService = (currentService - 1 + numpages%numpages)
 		info.Highlight(strconv.Itoa(currentService)).
 			ScrollToHighlight()
 		pages.SwitchToPage(strconv.Itoa(currentService))
 	}
 	nextService := func() {
-		currentService = (currentService + 1) % len(serviceSlice)
+		currentService = (currentService + 1) % numpages
 		info.Highlight(strconv.Itoa(currentService)).
 			ScrollToHighlight()
 		pages.SwitchToPage(strconv.Itoa(currentService))
 	}
 	for index := 0; index < 2; index++ {
 		title := titles[index]
-		primitive := serviceSlice[index].GetContent()
+		primitive := serviceArr[index].GetContent()
 		pages.AddPage(strconv.Itoa(index), primitive, true, index == currentService)
 		fmt.Fprintf(info, `%d ["%d"][darkcyan]%s[white][""]  `, index+1, index, title)
 	}
@@ -105,17 +106,13 @@ func updateTime() {
 	for {
 		time.Sleep(2 * time.Second)
 		app.QueueUpdateDraw(func() {
-			//layout = serviceSlice[currentService].GetContent()
-			for index := 0; index < 2; index++ {
-				title := serviceSlice[currentService].GetName()
-				primitive := serviceSlice[currentService].GetContent()
-				pages.AddPage(strconv.Itoa(index), primitive, true, index == currentService)
-				fmt.Fprintf(info, `%d ["%d"][darkcyan]%s[white][""]  `, index+1, index, title)
-				layout = tview.NewFlex().
-					SetDirection(tview.FlexRow).
-					AddItem(pages, 0, 1, true).
-					AddItem(info, 1, 1, false)
-			}
+			primitive := serviceArr[currentService].GetContent()
+			pages.RemovePage(strconv.Itoa(currentService))
+			pages.AddPage(strconv.Itoa(currentService), primitive, true, true)
+			layout = tview.NewFlex().
+				SetDirection(tview.FlexRow).
+				AddItem(pages, 0, 1, true).
+				AddItem(info, 1, 1, false)
 		})
 	}
 }
