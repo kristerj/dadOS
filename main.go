@@ -16,12 +16,13 @@ var app = tview.NewApplication()
 var numpages int
 var pages *tview.Pages
 var layout *tview.Flex
+var savedLayout *tview.Flex
 var serviceArr [10]services.Service
 var titles [10]string
 var info *tview.TextView
 var currentService int
 var indexupdate int
-
+var currentTime time.Time
 // Starting point for the application.
 func main() {
 	numpages = 2
@@ -33,11 +34,7 @@ func main() {
 	titles[0] = "Dashboard 1"
 	titles[1] = "Dashboard 2"
 	// The bottom row has some info on where we are.
-	info = tview.NewTextView().
-		SetDynamicColors(true).
-		SetRegions(true).
-		SetWrap(false)
-
+	info = buildInfo()
 	// Create the pages for all services.
 	currentService = 0
 	info.Highlight(strconv.Itoa(currentService))
@@ -56,12 +53,9 @@ func main() {
 		pages.SwitchToPage(strconv.Itoa(currentService))
 	}
 	for index := 0; index < 2; index++ {
-		title := titles[index]
 		primitive := serviceArr[index].GetContent()
 		pages.AddPage(strconv.Itoa(index), primitive, true, index == currentService)
-		fmt.Fprintf(info, `%d ["%d"][darkcyan]%s[white][""]  `, index+1, index, title)
 	}
-
 	// Create the main layout.
 	layout = tview.NewFlex().
 		SetDirection(tview.FlexRow).
@@ -74,6 +68,8 @@ func main() {
 			nextService()
 		} else if event.Key() == tcell.KeyCtrlP {
 			previousService()
+		} else if event.Key() == tcell.KeyCtrlL {
+			showLogin()
 		} else if event.Key() == tcell.KeyEsc || event.Rune() == 'q' {
 			app.Stop()
 		}
@@ -89,21 +85,38 @@ func main() {
 
 //end of main function, start of any helper functions
 func showLogin() {
+	savedLayout = layout
 	form := tview.NewForm()
 	form.AddInputField("Login name", "", 20, nil, nil).
 		AddPasswordField("Password", "", 10, '*', nil).
-		AddButton("Login", loginFn).
+		AddButton("Login", func() {time.Sleep(2) }).
 		AddButton("Quit", func() {
-			app.Stop()
+			app.SetRoot(savedLayout, true).Run()
 		})
 	form.SetBorder(true).SetTitle("Login").SetTitleAlign(tview.AlignLeft)
+	layout = tview.NewFlex().
+		SetDirection(tview.FlexRow).
+		AddItem(form, 0, 1, true)
+	app.SetRoot(layout, true)
 }
 
-func loginFn() {
+func buildInfo() *tview.TextView{
+	t := tview.NewTextView().
+		SetDynamicColors(true).
+		SetRegions(true).
+		SetWrap(false)
+	currentTime = time.Now()
+	for index := 0; index < 2; index++ {
+		title := titles[index]
+		fmt.Fprintf(t, `%d ["%d"][darkcyan]%s[white][""]  `, index+1, index, title)
+	}
+	fmt.Fprintf(t, ` %s`, currentTime)
+	return t
 
 }
 func updateTime() {
 	for {
+		info = buildInfo()
 		time.Sleep(2 * time.Second)
 		app.QueueUpdateDraw(func() {
 			primitive := serviceArr[currentService].GetContent()
