@@ -22,7 +22,7 @@ var titles [10]string
 var info *tview.TextView
 var currentService int
 var indexupdate int
-var currentTime time.Time
+var currentTime string
 // Starting point for the application.
 func main() {
 	numpages = 2
@@ -34,7 +34,11 @@ func main() {
 	titles[0] = "Dashboard 1"
 	titles[1] = "Dashboard 2"
 	// The bottom row has some info on where we are.
-	info = buildInfo()
+	info = tview.NewTextView().
+		SetDynamicColors(true).
+		SetRegions(true).
+		SetWrap(false)
+	buildInfo(info)
 	// Create the pages for all services.
 	currentService = 0
 	info.Highlight(strconv.Itoa(currentService))
@@ -43,13 +47,13 @@ func main() {
 	previousService := func() {
 		currentService = (currentService - 1 + numpages%numpages)
 		info.Highlight(strconv.Itoa(currentService)).
-			ScrollToHighlight()
+		ScrollToHighlight()
 		pages.SwitchToPage(strconv.Itoa(currentService))
 	}
 	nextService := func() {
 		currentService = (currentService + 1) % numpages
 		info.Highlight(strconv.Itoa(currentService)).
-			ScrollToHighlight()
+		ScrollToHighlight()
 		pages.SwitchToPage(strconv.Itoa(currentService))
 	}
 	for index := 0; index < 2; index++ {
@@ -58,9 +62,9 @@ func main() {
 	}
 	// Create the main layout.
 	layout = tview.NewFlex().
-		SetDirection(tview.FlexRow).
-		AddItem(pages, 0, 1, true).
-		AddItem(info, 1, 1, false)
+	SetDirection(tview.FlexRow).
+	AddItem(pages, 0, 1, true).
+	AddItem(info, 1, 1, false)
 
 	// Shortcuts to navigate the slides.
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
@@ -88,44 +92,41 @@ func showLogin() {
 	savedLayout = layout
 	form := tview.NewForm()
 	form.AddInputField("Login name", "", 20, nil, nil).
-		AddPasswordField("Password", "", 10, '*', nil).
-		AddButton("Login", func() {time.Sleep(2) }).
-		AddButton("Quit", func() {
-			app.SetRoot(savedLayout, true).Run()
-		})
+	AddPasswordField("Password", "", 10, '*', nil).
+	AddButton("Login", func() {time.Sleep(2) }).
+	AddButton("Quit", func() {
+		app.SetRoot(savedLayout, true).Run()
+	})
 	form.SetBorder(true).SetTitle("Login").SetTitleAlign(tview.AlignLeft)
 	layout = tview.NewFlex().
-		SetDirection(tview.FlexRow).
-		AddItem(form, 0, 1, true)
+	SetDirection(tview.FlexRow).
+	AddItem(form, 0, 1, true)
 	app.SetRoot(layout, true)
 }
 
-func buildInfo() *tview.TextView{
-	t := tview.NewTextView().
-		SetDynamicColors(true).
-		SetRegions(true).
-		SetWrap(false)
-	currentTime = time.Now()
-	for index := 0; index < 2; index++ {
+func buildInfo(t *tview.TextView){
+	t.SetText(" ")
+	for index := 0; index < numpages; index++ {
 		title := titles[index]
 		fmt.Fprintf(t, `%d ["%d"][darkcyan]%s[white][""]  `, index+1, index, title)
 	}
-	fmt.Fprintf(t, ` %s`, currentTime)
-	return t
+	currentTime = time.Now().Format("Mon Jan 2 15:04:05")
+	fmt.Fprintf(t, `/ %s`, currentTime)
+	t.Highlight(strconv.Itoa(currentService)).
+	ScrollToHighlight()
 
 }
+
+
 func updateTime() {
 	for {
-		info = buildInfo()
-		time.Sleep(2 * time.Second)
+		time.Sleep(1 * time.Second)
 		app.QueueUpdateDraw(func() {
-			primitive := serviceArr[currentService].GetContent()
-			pages.RemovePage(strconv.Itoa(currentService))
-			pages.AddPage(strconv.Itoa(currentService), primitive, true, true)
-			layout = tview.NewFlex().
-				SetDirection(tview.FlexRow).
-				AddItem(pages, 0, 1, true).
-				AddItem(info, 1, 1, false)
+			buildInfo(info)
+			//there has to be a better way to redraw the current page than this
+			//primitive := serviceArr[currentService].GetContent()
+			//pages.RemovePage(strconv.Itoa(currentService))
+			//pages.AddPage(strconv.Itoa(currentService), primitive, true, true)
 		})
 	}
 }
