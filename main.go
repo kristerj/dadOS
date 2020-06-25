@@ -23,13 +23,14 @@ var info *tview.TextView
 var currentService int
 var indexupdate int
 var currentTime string
+var refreshCount int
 // Starting point for the application.
 func main() {
+	refreshCount = 0
 	numpages = 2
-	dashboard := services.Dashboard{}
 	// The services (features this application provides).
-	serviceArr[0] = dashboard
-	serviceArr[1] = dashboard
+	serviceArr[0] = services.Dashboard{Name:"Dashboard 1",Content:nil,SharedVals:[]int{4,1,2,3,4,5,6,7,8,9}}
+	serviceArr[1] = services.Dashboard{"Dashboard 2",nil,[]int{5,1,2,3,4,5,6,7,8,9}}
 
 	titles[0] = "Dashboard 1"
 	titles[1] = "Dashboard 2"
@@ -123,10 +124,10 @@ func updateTime() {
 		time.Sleep(1 * time.Second)
 		app.QueueUpdateDraw(func() {
 			buildInfo(info)
+			primitive := serviceArr[currentService].GetContent()
 			//there has to be a better way to redraw the current page than this
-			//primitive := serviceArr[currentService].GetContent()
-			//pages.RemovePage(strconv.Itoa(currentService))
-			//pages.AddPage(strconv.Itoa(currentService), primitive, true, true)
+			pages.RemovePage(strconv.Itoa(currentService))
+			pages.AddPage(strconv.Itoa(currentService), primitive, true, true)
 		})
 	}
 }

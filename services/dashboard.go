@@ -3,7 +3,7 @@ package services
 import (
 	"dados/dadlib"
 	"fmt"
-	"math/rand"
+//	"math/rand"
 	"strings"
 
 	"github.com/gdamore/tcell"
@@ -18,14 +18,23 @@ const (
 //Dashboard is a thing
 type Dashboard struct {
 	Name    string
-	content *tview.Flex
+	Content *tview.Flex
+	SharedVals []int
+}
+
+func (d Dashboard) GetSharedVals(i int) int{
+	return d.SharedVals[i] 
+}
+func (d Dashboard) SetSharedVals(i int, j int){
+	d.SharedVals[i] = j
 }
 
 //GetContent spits out the content
 func (d Dashboard) GetContent() *tview.Flex {
+	d.SetSharedVals(0, d.GetSharedVals(0)+1) 
+	//fmt.Printf(".%d.\n", d.SharedVals[0])
 	// What's the size of the logo?
-	somenum := rand.Intn(9)
-	lines := strings.Split(dadlib.Bignum(somenum), "\n")
+	lines := strings.Split(dadlib.Bignum(d.GetSharedVals(0)%9), "\n")
 	logoWidth := 0
 	logoHeight := len(lines)
 	for _, line := range lines {
@@ -36,7 +45,7 @@ func (d Dashboard) GetContent() *tview.Flex {
 	logoBox := tview.NewTextView().
 		SetTextColor(tcell.ColorGreen)
 
-	fmt.Fprint(logoBox, dadlib.Bignum(somenum))
+	fmt.Fprint(logoBox, dadlib.Bignum(d.GetSharedVals(0)%9))
 
 	// Create a frame for the subtitle and navigation infos.
 	frame := tview.NewFrame(tview.NewBox()).
@@ -50,9 +59,9 @@ func (d Dashboard) GetContent() *tview.Flex {
 		SetDirection(tview.FlexRow).
 		AddItem(tview.NewBox(), 0, 7, false).
 		AddItem(tview.NewFlex().
-			AddItem(tview.NewBox(), 0, 1, false).
-			AddItem(logoBox, logoWidth, 1, true).
-			AddItem(tview.NewBox(), 0, 1, false), logoHeight, 1, true).
+		AddItem(tview.NewBox(), 0, 1, false).
+		AddItem(logoBox, logoWidth, 1, true).
+		AddItem(tview.NewBox(), 0, 1, false), logoHeight, 1, true).
 		AddItem(frame, 0, 10, false)
 
 	return flex
