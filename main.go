@@ -24,13 +24,14 @@ var currentService int
 var indexupdate int
 var currentTime string
 var refreshCount int
+
 // Starting point for the application.
 func main() {
 	refreshCount = 0
 	numpages = 2
 	// The services (features this application provides).
-	serviceArr[0] = services.Dashboard{Name:"Dashboard 1",Content:nil,SharedVals:[]int{4,1,2,3,4,5,6,7,8,9}}
-	serviceArr[1] = services.Dashboard{"Dashboard 2",nil,[]int{5,1,2,3,4,5,6,7,8,9}}
+	serviceArr[0] = services.Dashboard{Name: "Dashboard 1", Content: nil, SharedVals: []int{4, 1, 2, 3, 4, 5, 6, 7, 8, 9}}
+	serviceArr[1] = services.Dashboard{"Dashboard 2", nil, []int{5, 1, 2, 3, 4, 5, 6, 7, 8, 9}}
 
 	titles[0] = "Dashboard 1"
 	titles[1] = "Dashboard 2"
@@ -48,13 +49,13 @@ func main() {
 	previousService := func() {
 		currentService = (currentService - 1 + numpages%numpages)
 		info.Highlight(strconv.Itoa(currentService)).
-		ScrollToHighlight()
+			ScrollToHighlight()
 		pages.SwitchToPage(strconv.Itoa(currentService))
 	}
 	nextService := func() {
 		currentService = (currentService + 1) % numpages
 		info.Highlight(strconv.Itoa(currentService)).
-		ScrollToHighlight()
+			ScrollToHighlight()
 		pages.SwitchToPage(strconv.Itoa(currentService))
 	}
 	for index := 0; index < 2; index++ {
@@ -63,9 +64,9 @@ func main() {
 	}
 	// Create the main layout.
 	layout = tview.NewFlex().
-	SetDirection(tview.FlexRow).
-	AddItem(pages, 0, 1, true).
-	AddItem(info, 1, 1, false)
+		SetDirection(tview.FlexRow).
+		AddItem(pages, 0, 1, true).
+		AddItem(info, 1, 1, false)
 
 	// Shortcuts to navigate the slides.
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
@@ -93,19 +94,19 @@ func showLogin() {
 	savedLayout = layout
 	form := tview.NewForm()
 	form.AddInputField("Login name", "", 20, nil, nil).
-	AddPasswordField("Password", "", 10, '*', nil).
-	AddButton("Login", func() {time.Sleep(2) }).
-	AddButton("Quit", func() {
-		app.SetRoot(savedLayout, true).Run()
-	})
+		AddPasswordField("Password", "", 10, '*', nil).
+		AddButton("Login", func() { time.Sleep(2) }).
+		AddButton("Quit", func() {
+			app.SetRoot(savedLayout, true).Run()
+		})
 	form.SetBorder(true).SetTitle("Login").SetTitleAlign(tview.AlignLeft)
 	layout = tview.NewFlex().
-	SetDirection(tview.FlexRow).
-	AddItem(form, 0, 1, true)
+		SetDirection(tview.FlexRow).
+		AddItem(form, 0, 1, true)
 	app.SetRoot(layout, true)
 }
 
-func buildInfo(t *tview.TextView){
+func buildInfo(t *tview.TextView) {
 	t.SetText(" ")
 	for index := 0; index < numpages; index++ {
 		title := titles[index]
@@ -114,10 +115,9 @@ func buildInfo(t *tview.TextView){
 	currentTime = time.Now().Format("Mon Jan 2 15:04:05")
 	fmt.Fprintf(t, `/ %s`, currentTime)
 	t.Highlight(strconv.Itoa(currentService)).
-	ScrollToHighlight()
+		ScrollToHighlight()
 
 }
-
 
 func updateTime() {
 	for {
