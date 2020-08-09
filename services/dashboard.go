@@ -3,8 +3,9 @@ package services
 import (
 	"dados/dadlib"
 	"fmt"
-//	"math/rand"
+	//	"math/rand"
 	"strings"
+	"time"
 
 	"github.com/gdamore/tcell"
 	"github.com/rivo/tview"
@@ -17,21 +18,30 @@ const (
 
 //Dashboard is a thing
 type Dashboard struct {
-	Name    string
-	Content *tview.Flex
+	Name       string
+	Content    *tview.Flex
 	SharedVals []int
 }
 
-func (d Dashboard) GetSharedVals(i int) int{
-	return d.SharedVals[i] 
+var showButtons bool
+
+func (d Dashboard) GetSharedVals(i int) int {
+	return d.SharedVals[i]
 }
-func (d Dashboard) SetSharedVals(i int, j int){
+func (d Dashboard) SetSharedVals(i int, j int) {
 	d.SharedVals[i] = j
+}
+
+func (d Dashboard) BackgroundTasks(c chan string) {
+	for {
+		c <- ("Service " + d.Name + " check in\n")
+		time.Sleep(time.Duration(d.SharedVals[1]) * time.Second)
+	}
 }
 
 //GetContent spits out the content
 func (d Dashboard) GetContent() *tview.Flex {
-	d.SetSharedVals(0, d.GetSharedVals(0)+1) 
+	d.SetSharedVals(0, d.GetSharedVals(0)+1)
 	//fmt.Printf(".%d.\n", d.SharedVals[0])
 	// What's the size of the logo?
 	lines := strings.Split(dadlib.Bignum(d.GetSharedVals(0)%9), "\n")
@@ -56,13 +66,16 @@ func (d Dashboard) GetContent() *tview.Flex {
 
 	// Create a Flex layout that centers the logo and subtitle.
 	flex := tview.NewFlex().
-		SetDirection(tview.FlexRow).
-		AddItem(tview.NewBox(), 0, 7, false).
+		SetDirection(tview.FlexRow)
+	if showButtons {
+		flex.AddItem(tview.NewForm().AddButton("FIRE LASERS", func() {}), 0, 3, false)
+	}
+	flex.AddItem(tview.NewBox(), 0, 1, false).
 		AddItem(tview.NewFlex().
-		AddItem(tview.NewBox(), 0, 1, false).
-		AddItem(logoBox, logoWidth, 1, true).
-		AddItem(tview.NewBox(), 0, 1, false), logoHeight, 1, true).
-		AddItem(frame, 0, 10, false)
+			AddItem(tview.NewBox(), 0, 1, false).
+			AddItem(logoBox, logoWidth, 1, true).
+			AddItem(tview.NewBox(), 0, 1, false), logoHeight, 1, true).
+		AddItem(frame, 0, 2, false)
 
 	return flex
 }
@@ -70,4 +83,28 @@ func (d Dashboard) GetContent() *tview.Flex {
 //GetName spits out a name
 func (d Dashboard) GetName() (name string) {
 	return "Dashboard"
+}
+
+func (d Dashboard) PressKey(k tcell.Key) {
+	if k == tcell.KeyF1 {
+		showButtons = !showButtons
+	} else if k == tcell.KeyF2 {
+
+	} else if k == tcell.KeyF3 {
+
+	} else if k == tcell.KeyF4 {
+
+	} else if k == tcell.KeyF5 {
+
+	} else if k == tcell.KeyF6 {
+
+	} else if k == tcell.KeyF7 {
+
+	} else if k == tcell.KeyF8 {
+
+	} else if k == tcell.KeyF9 {
+
+	} else if k == tcell.KeyF10 {
+
+	}
 }
