@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	subtitle   = `CO2 ppm`
+	subtitle   = `dadOS Dashboard`
 	navigation = `Ctrl-N: Next service    Ctrl-P: Previous service    Ctrl-C: Exit`
 )
 
